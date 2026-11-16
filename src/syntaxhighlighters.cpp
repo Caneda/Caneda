@@ -21,6 +21,7 @@
 
 #include "settings.h"
 
+#include <QRegularExpression>
 #include <QTextCharFormat>
 
 namespace Caneda
@@ -37,33 +38,39 @@ namespace Caneda
     void Highlighter::highlightBlock(const QString &text)
     {
         foreach (HighlightingRule rule, highlightingRules) {
-            QRegExp expression(rule.pattern);
-            int index = text.indexOf(expression);
-            while (index >= 0) {
-                int length = expression.matchedLength();
-                setFormat(index, length, rule.format);
-                index = text.indexOf(expression, index + length);
+            QRegularExpressionMatchIterator it =
+                    rule.pattern.globalMatch(text);
+            while (it.hasNext()) {
+                QRegularExpressionMatch match = it.next();
+                setFormat(match.capturedStart(),
+                          match.capturedLength(), rule.format);
             }
         }
         setCurrentBlockState(0);
 
+        QRegularExpressionMatch match;
         int startIndex = 0;
-        if (previousBlockState() != 1)
-            startIndex = text.indexOf(commentStartExpression);
+        if (previousBlockState() != 1) {
+            match = commentStartExpression.match(text);
+            startIndex = match.hasMatch() ? match.capturedStart() : -1;
+        }
 
         while (startIndex >= 0) {
-            int endIndex = text.indexOf(commentEndExpression, startIndex);
+            QRegularExpressionMatch endMatch =
+                    commentEndExpression.match(text, startIndex);
+            int endIndex = endMatch.hasMatch() ? endMatch.capturedStart() : -1;
+
             int commentLength;
             if (endIndex == -1) {
                 setCurrentBlockState(1);
                 commentLength = text.length() - startIndex;
             } else {
                 commentLength = endIndex - startIndex
-                                + commentEndExpression.matchedLength();
+                                + endMatch.capturedLength();
             }
             setFormat(startIndex, commentLength, multiLineCommentFormat);
-            startIndex = text.indexOf(commentStartExpression,
-                                      startIndex + commentLength);
+            match = commentStartExpression.match(text, startIndex + commentLength);
+            startIndex = match.hasMatch() ? match.capturedStart() : -1;
         }
     }
 
@@ -107,7 +114,7 @@ namespace Caneda
                 "\\band\\b" << "\\bor\\b" << "\\bxor\\b" <<
                 "\\bnot\\b";
         foreach (QString pattern, keywordPatterns) {
-            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.pattern = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
             rule.format = keywordFormat;
             highlightingRules.append(rule);
         }
@@ -128,7 +135,7 @@ namespace Caneda
                 "\\bmux_bit\\b" << "\\bmux_vector\\b" << "\\breg_bit\\b" <<
                 "\\breg_vector\\b" << "\\bwor_bit\\b" << "\\bwor_vector\\b";
         foreach (QString pattern, typePatterns) {
-            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.pattern = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
             rule.format = typeFormat;
             highlightingRules.append(rule);
         }
@@ -140,7 +147,7 @@ namespace Caneda
         attributePatterns << "\\bsignal\\b" << "\\bvariable\\b" << "\\bconstant\\b" <<
                 "\\btype\\b";
         foreach (QString pattern, attributePatterns) {
-            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.pattern = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
             rule.format = attributeFormat;
             highlightingRules.append(rule);
         }
@@ -153,7 +160,7 @@ namespace Caneda
         blockPatterns << "\\bprocess\\b" << "\\bif\\b" << "\\belse\\b" <<
                 "\\belsif\\b" << "\\bloop\\b" << "\\bend if\\b";
         foreach (QString pattern, blockPatterns) {
-            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.pattern = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
             rule.format = blockFormat;
             highlightingRules.append(rule);
         }
@@ -170,7 +177,7 @@ namespace Caneda
                 "\\bpackage body+(?= [A-Za-z0-9_]* is\\b)" <<
                 "\\bof\\b" << "\\bis\\b";
         foreach (QString pattern, classPatterns) {
-            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.pattern = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
             rule.format = classFormat;
             highlightingRules.append(rule);
         }
@@ -178,7 +185,7 @@ namespace Caneda
         const QColor currentDataColor =
             settings->currentValue("gui/hdl/data").value<QColor>();
         dataFormat.setForeground(currentDataColor);
-        rule.pattern = QRegExp("\"[A-Za-z0-9]*\"|\'[A-Za-z0-9]*\'|\'event", Qt::CaseInsensitive);
+        rule.pattern = QRegularExpression("\"[A-Za-z0-9]*\"|\'[A-Za-z0-9]*\'|\'event", QRegularExpression::CaseInsensitiveOption);
         rule.format = dataFormat;
         highlightingRules.append(rule);
 
@@ -186,13 +193,13 @@ namespace Caneda
             settings->currentValue("gui/hdl/comment").value<QColor>();
 
         singleLineCommentFormat.setForeground(currentCommentColor);
-        rule.pattern = QRegExp("--[^\n]*");
+        rule.pattern = QRegularExpression("--[^\n]*");
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
         multiLineCommentFormat.setForeground(currentCommentColor);
-        commentStartExpression = QRegExp("/\\*");
-        commentEndExpression = QRegExp("\\*/");
+        commentStartExpression = QRegularExpression("/\\*");
+        commentEndExpression = QRegularExpression("\\*/");
     }
 
     /*************************************************************************
@@ -222,7 +229,7 @@ namespace Caneda
                 "\\bedge\\b" << "\\bposedge\\b" << "\\bnegedge\\b" <<
                 "\\bbegin\\b" << "\\bend\\b";
         foreach (QString pattern, keywordPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = keywordFormat;
             highlightingRules.append(rule);
         }
@@ -241,7 +248,7 @@ namespace Caneda
                 "\\bvectored\\b" << "\\bscalared\\b" << "\\btrireg\\b" <<
                 "\\bparameter\\b" << "\\bevent\\b";
         foreach (QString pattern, typePatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = typeFormat;
             highlightingRules.append(rule);
         }
@@ -260,7 +267,7 @@ namespace Caneda
                 "\\brtranif1\\b" << "\\bbufif0\\b" << "\\bbufif1\\b" <<
                 "\\bnotif0\\b" << "\\bnotif1\\b";
         foreach (QString pattern, attributePatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = attributeFormat;
             highlightingRules.append(rule);
         }
@@ -273,7 +280,7 @@ namespace Caneda
         blockPatterns << "\\bif\\b" << "\\belse\\b" << "\\bwhile\\b" <<
                 "\\bfor\\b" << "\\brepeat\\b" << "\\balways\\b";
         foreach (QString pattern, blockPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = blockFormat;
             highlightingRules.append(rule);
         }
@@ -286,7 +293,7 @@ namespace Caneda
         classPatterns << "\\bmodule+(?= [A-Za-z0-9_]*\\b)" <<
                 "\\bendmodule\\b";
         foreach (QString pattern, classPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = classFormat;
             highlightingRules.append(rule);
         }
@@ -302,7 +309,7 @@ namespace Caneda
                 "\"[A-Za-z0-9]*\"" << "[\\d_]*'d[\\d_]+" << "[\\d_]*'o[0-7xXzZ_]+" <<
                 "[\\d_]*'h[\\da-fA-FxXzZ_]+" << "[\\d_]*'b[01_zZxX]+" << "[\\d]*.[\\d]+";
         foreach (QString pattern, dataPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = dataFormat;
             highlightingRules.append(rule);
         }
@@ -311,13 +318,13 @@ namespace Caneda
             settings->currentValue("gui/hdl/comment").value<QColor>();
 
         singleLineCommentFormat.setForeground(currentCommentColor);
-        rule.pattern = QRegExp("//[^\n]*");
+        rule.pattern = QRegularExpression("//[^\n]*");
         rule.format = singleLineCommentFormat;
         highlightingRules.append(rule);
 
         multiLineCommentFormat.setForeground(currentCommentColor);
-        commentStartExpression = QRegExp("/\\*");
-        commentEndExpression = QRegExp("\\*/");
+        commentStartExpression = QRegularExpression("/\\*");
+        commentEndExpression = QRegularExpression("\\*/");
 
         const QColor currentSystemColor =
             settings->currentValue("gui/hdl/system").value<QColor>();
@@ -330,7 +337,7 @@ namespace Caneda
                 "\\$time" << "\\$dumpfile" << "\\$dumpvars" <<
                 "\\$dumpports" << "\\$random";
         foreach (QString pattern, systemPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = systemFormat;
             highlightingRules.append(rule);
         }
@@ -363,7 +370,7 @@ namespace Caneda
                 "\\bPWL\\b" << "\\bSFFM\\b" << "\\bSINE\\b" <<
                 "[VI]\\([A-Za-z0-9\\,]*\\)";
         foreach (QString pattern, keywordPatterns) {
-            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.pattern = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
             rule.format = keywordFormat;
             highlightingRules.append(rule);
         }
@@ -374,7 +381,7 @@ namespace Caneda
         QStringList dataPatterns;
         dataPatterns << "[\\d][fpnumkKGT]{0,1}" << "[\\d](Meg){0,1}";
         foreach (QString pattern, dataPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = dataFormat;
             highlightingRules.append(rule);
         }
@@ -386,7 +393,7 @@ namespace Caneda
         attributePatterns << "\\{[A-Za-z0-9\\*\\/]*\\}"
                 << "\\'[A-Za-z0-9\\*\\/]*\\'";
         foreach (QString pattern, attributePatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = attributeFormat;
             highlightingRules.append(rule);
         }
@@ -398,7 +405,7 @@ namespace Caneda
         QStringList typePatterns;
         typePatterns << "^[RCLDQJMZXSWGEFHBTUVI][A-Za-z0-9\\_]+\\b";
         foreach (QString pattern, typePatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = typeFormat;
             highlightingRules.append(rule);
         }
@@ -410,14 +417,14 @@ namespace Caneda
         QStringList comentPatterns;
         comentPatterns << "^\\*[^\n]*" << "//[^\n]*" << "\\$[^\n]*";
         foreach (QString pattern, comentPatterns) {
-            rule.pattern = QRegExp(pattern);
+            rule.pattern = QRegularExpression(pattern);
             rule.format = singleLineCommentFormat;
             highlightingRules.append(rule);
         }
 
         multiLineCommentFormat.setForeground(currentCommentColor);
-        commentStartExpression = QRegExp("(\\.control)|(^\\.end\\b)", Qt::CaseInsensitive);
-        commentEndExpression = QRegExp("\\.endc", Qt::CaseInsensitive);
+        commentStartExpression = QRegularExpression("(\\.control)|(^\\.end\\b)", QRegularExpression::CaseInsensitiveOption);
+        commentEndExpression = QRegularExpression("\\.endc", QRegularExpression::CaseInsensitiveOption);
 
         const QColor currentSystemColor =
             settings->currentValue("gui/hdl/system").value<QColor>();
@@ -433,7 +440,7 @@ namespace Caneda
                 "^\\.four" << "^\\.global" << "^\\.func" <<
                 "^\\.ends";
         foreach (QString pattern, systemPatterns) {
-            rule.pattern = QRegExp(pattern, Qt::CaseInsensitive);
+            rule.pattern = QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption);
             rule.format = systemFormat;
             highlightingRules.append(rule);
         }

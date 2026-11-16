@@ -1364,9 +1364,9 @@ namespace Caneda
 
         // Save only named nodes
         for(const auto &nn: netlist) {
-            QRegExp rx("\\d+");
+            QRegularExpression rx("\\d+");
             if (!nodesList.contains(nn.second) &&
-                !rx.exactMatch(nn.second)) {
+                !rx.match(nn.second).hasMatch()) {
                 nodesList.append(nn.second);
             }
         }

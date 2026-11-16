@@ -25,6 +25,7 @@
 #include <QHeaderView>
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QRegularExpression>
 #include <QTreeView>
 #include <QVBoxLayout>
 
@@ -112,8 +113,8 @@ namespace Caneda
     void QuickInsert::filterTextChanged()
     {
         QString text = m_filterEdit->text();
-        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-        m_proxyModel->setFilterRegExp(regExp);
+        QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+        m_proxyModel->setFilterRegularExpression(regExp);
         m_treeView->setCurrentIndex(m_proxyModel->index(0,0));
         m_treeView->expandAll();
     }

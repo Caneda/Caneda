@@ -46,14 +46,14 @@ namespace Caneda
 
         QToolButton *buttonUp = new QToolButton(this);
         buttonUp->setIcon(Caneda::icon("go-up"));
-        buttonUp->setShortcut(Qt::ALT + Qt::Key_Up);
+        buttonUp->setShortcut(Qt::ALT | Qt::Key_Up);
         buttonUp->setStatusTip(tr("Go up one folder"));
         buttonUp->setToolTip(tr("Go up one folder"));
         buttonUp->setWhatsThis(tr("Go up one folder"));
 
         buttonBack = new QToolButton(this);
         buttonBack->setIcon(Caneda::icon("go-previous"));
-        buttonBack->setShortcut(Qt::ALT + Qt::Key_Left);
+        buttonBack->setShortcut(Qt::ALT | Qt::Key_Left);
         buttonBack->setStatusTip(tr("Go previous folder"));
         buttonBack->setToolTip(tr("Go previous folder"));
         buttonBack->setWhatsThis(tr("Go previous folder"));
@@ -61,7 +61,7 @@ namespace Caneda
 
         buttonForward = new QToolButton(this);
         buttonForward->setIcon(Caneda::icon("go-next"));
-        buttonForward->setShortcut(Qt::ALT + Qt::Key_Right);
+        buttonForward->setShortcut(Qt::ALT | Qt::Key_Right);
         buttonForward->setStatusTip(tr("Go next folder"));
         buttonForward->setToolTip(tr("Go next folder"));
         buttonForward->setWhatsThis(tr("Go next folder"));
@@ -69,7 +69,7 @@ namespace Caneda
 
         QToolButton *buttonHome = new QToolButton(this);
         buttonHome->setIcon(Caneda::icon("go-home"));
-        buttonHome->setShortcut(Qt::ALT + Qt::Key_Home);
+        buttonHome->setShortcut(Qt::ALT | Qt::Key_Home);
         buttonHome->setStatusTip(tr("Go to the home folder"));
         buttonHome->setToolTip(tr("Go to the home folder"));
         buttonHome->setWhatsThis(tr("Go to the home folder"));

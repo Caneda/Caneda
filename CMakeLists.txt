@@ -8,13 +8,15 @@ SET( PACKAGE_STRING "caneda 0.4.0" )
 # ==================================================================================
 # Minimum libraries required
 
-CMAKE_MINIMUM_REQUIRED( VERSION 2.8.11 )
+CMAKE_MINIMUM_REQUIRED( VERSION 3.16 )
 
-SET( QT_MIN_VERSION 5.3.2 )
-FIND_PACKAGE( Qt5Widgets ${QT_MIN_VERSION} REQUIRED )
-FIND_PACKAGE( Qt5Svg ${QT_MIN_VERSION} REQUIRED )
-FIND_PACKAGE( Qt5PrintSupport ${QT_MIN_VERSION} REQUIRED )
-FIND_PACKAGE( Qt5LinguistTools ${QT_MIN_VERSION} REQUIRED )
+SET( QT_MIN_VERSION 6.2.0 )
+FIND_PACKAGE( Qt6Widgets ${QT_MIN_VERSION} REQUIRED )
+FIND_PACKAGE( Qt6Svg ${QT_MIN_VERSION} REQUIRED )
+FIND_PACKAGE( Qt6PrintSupport ${QT_MIN_VERSION} REQUIRED )
+
+# Optional: only needed when (re)building translations. See the i18n subdirectory.
+FIND_PACKAGE( Qt6LinguistTools ${QT_MIN_VERSION} )
 
 # For Qwt
 SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/" )

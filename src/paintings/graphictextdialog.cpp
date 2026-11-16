@@ -24,6 +24,7 @@
 #include "undocommands.h"
 
 #include <QAction>
+#include <QActionGroup>
 #include <QApplication>
 #include <QClipboard>
 #include <QColorDialog>
@@ -179,7 +180,7 @@ namespace Caneda
         QToolBar *tb = toolBar;
 
         actionTextBold = new QAction(Caneda::icon("format-text-bold"), tr("&Bold"), this);
-        actionTextBold->setShortcut(Qt::CTRL + Qt::Key_B);
+        actionTextBold->setShortcut(Qt::CTRL | Qt::Key_B);
         QFont bold;
         bold.setBold(true);
         actionTextBold->setFont(bold);
@@ -189,7 +190,7 @@ namespace Caneda
         actionTextBold->setCheckable(true);
 
         actionTextItalic = new QAction(Caneda::icon("format-text-italic"), tr("&Italic"), this);
-        actionTextItalic->setShortcut(Qt::CTRL + Qt::Key_I);
+        actionTextItalic->setShortcut(Qt::CTRL | Qt::Key_I);
         QFont italic;
         italic.setItalic(true);
         actionTextItalic->setFont(italic);
@@ -199,7 +200,7 @@ namespace Caneda
         actionTextItalic->setCheckable(true);
 
         actionTextUnderline = new QAction(Caneda::icon("format-text-underline"), tr("&Underline"), this);
-        actionTextUnderline->setShortcut(Qt::CTRL + Qt::Key_U);
+        actionTextUnderline->setShortcut(Qt::CTRL | Qt::Key_U);
         QFont underline;
         underline.setUnderline(true);
         actionTextUnderline->setFont(underline);
@@ -211,18 +212,22 @@ namespace Caneda
         QActionGroup *grp = new QActionGroup(this);
         connect(grp, &QActionGroup::triggered, this, &GraphicTextDialog::textAlign);
 
-        actionAlignLeft = new QAction(Caneda::icon("format-justify-left"), tr("&Left"), grp);
-        actionAlignLeft->setShortcut(Qt::CTRL + Qt::Key_L);
+        actionAlignLeft = new QAction(Caneda::icon("format-justify-left"), tr("&Left"), this);
+        actionAlignLeft->setShortcut(Qt::CTRL | Qt::Key_L);
         actionAlignLeft->setCheckable(true);
-        actionAlignCenter = new QAction(Caneda::icon("format-justify-center"), tr("C&enter"), grp);
-        actionAlignCenter->setShortcut(Qt::CTRL + Qt::Key_E);
+        grp->addAction(actionAlignLeft);
+        actionAlignCenter = new QAction(Caneda::icon("format-justify-center"), tr("C&enter"), this);
+        actionAlignCenter->setShortcut(Qt::CTRL | Qt::Key_E);
         actionAlignCenter->setCheckable(true);
-        actionAlignRight = new QAction(Caneda::icon("format-justify-right"), tr("&Right"), grp);
-        actionAlignRight->setShortcut(Qt::CTRL + Qt::Key_R);
+        grp->addAction(actionAlignCenter);
+        actionAlignRight = new QAction(Caneda::icon("format-justify-right"), tr("&Right"), this);
+        actionAlignRight->setShortcut(Qt::CTRL | Qt::Key_R);
         actionAlignRight->setCheckable(true);
-        actionAlignJustify = new QAction(Caneda::icon("format-justify-fill"), tr("&Justify"), grp);
-        actionAlignJustify->setShortcut(Qt::CTRL + Qt::Key_J);
+        grp->addAction(actionAlignRight);
+        actionAlignJustify = new QAction(Caneda::icon("format-justify-fill"), tr("&Justify"), this);
+        actionAlignJustify->setShortcut(Qt::CTRL | Qt::Key_J);
         actionAlignJustify->setCheckable(true);
+        grp->addAction(actionAlignJustify);
 
         tb->addActions(grp->actions());
         tb->addSeparator();
@@ -269,14 +274,17 @@ namespace Caneda
         grp = new QActionGroup(this);
         connect(grp, &QActionGroup::triggered, this, &GraphicTextDialog::textAlignSubSuperScript);
 
-        actionAlignSubscript = new QAction(Caneda::icon("format-text-subscript"), tr("Subscript"), grp);
+        actionAlignSubscript = new QAction(Caneda::icon("format-text-subscript"), tr("Subscript"), this);
         actionAlignSubscript->setCheckable(true);
+        grp->addAction(actionAlignSubscript);
 
-        actionAlignSupersript = new QAction(Caneda::icon("format-text-superscript"), tr("Superscript"), grp);
+        actionAlignSupersript = new QAction(Caneda::icon("format-text-superscript"), tr("Superscript"), this);
         actionAlignSupersript->setCheckable(true);
+        grp->addAction(actionAlignSupersript);
 
-        actionAlignNormalscript = new QAction(Caneda::icon("format-text-bold"), tr("Normal"), grp);
+        actionAlignNormalscript = new QAction(Caneda::icon("format-text-bold"), tr("Normal"), this);
         actionAlignNormalscript->setCheckable(true);
+        grp->addAction(actionAlignNormalscript);
 
         tb->addActions(grp->actions());
     }
@@ -305,7 +313,7 @@ namespace Caneda
     void GraphicTextDialog::textFamily(const QString &f)
     {
         QTextCharFormat fmt;
-        fmt.setFontFamily(f);
+        fmt.setFontFamilies({f});
         mergeFormatOnWordOrSelection(fmt);
     }
 

@@ -82,7 +82,7 @@ namespace Caneda
             if (ui.printerChoice->isChecked()) {
                 QPrintDialog *dialog = new QPrintDialog(this);
                 dialog->setWindowTitle(tr("Print options"));
-                dialog->setEnabledOptions(QAbstractPrintDialog::PrintShowPageSize);
+                dialog->setOption(QAbstractPrintDialog::PrintShowPageSize);
 
                 int status = dialog->exec();
                 delete dialog;

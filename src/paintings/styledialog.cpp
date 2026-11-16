@@ -31,6 +31,7 @@
 #include <QPainter>
 #include <QPen>
 #include <QPolygon>
+#include <QTransform>
 
 namespace Caneda
 {
@@ -258,7 +259,7 @@ namespace Caneda
         QRect rect = adjustedRect();
         int angle = -45;
 
-        QMatrix mapper;
+        QTransform mapper;
         mapper.rotate(angle);
 
         QPoint arrowTipPos = mapper.map(rect.topRight());

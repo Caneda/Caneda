@@ -25,6 +25,7 @@
 #include <QHeaderView>
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QRegularExpression>
 #include <QTreeView>
 #include <QVBoxLayout>
 
@@ -211,8 +212,8 @@ namespace Caneda
     void SidebarItemsBrowser::filterTextChanged()
     {
         QString text = m_filterEdit->text();
-        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-        m_proxyModel->setFilterRegExp(regExp);
+        QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+        m_proxyModel->setFilterRegularExpression(regExp);
         m_treeView->expandAll();
     }
 

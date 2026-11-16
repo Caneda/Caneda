@@ -25,6 +25,7 @@
 #include <QKeySequenceEdit>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QSortFilterProxyModel>
 
 namespace Caneda
@@ -302,8 +303,8 @@ namespace Caneda
     void ShortcutsDialog::filterTextChanged()
     {
         QString text = ui.lineEdit->text();
-        QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-        m_proxyModel->setFilterRegExp(regExp);
+        QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+        m_proxyModel->setFilterRegularExpression(regExp);
     }
 
     //! \brief Save all shortcut changes

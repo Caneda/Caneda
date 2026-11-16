@@ -26,6 +26,7 @@
 
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <QTransform>
 #include <QtMath>
 
 namespace Caneda
@@ -217,7 +218,7 @@ namespace Caneda
         qreal angle = qAtan2(-rect.height(), rect.width());
         angle = -270 + (angle * 180 / M_PI);
 
-        QMatrix mapper;
+        QTransform mapper;
         mapper.rotate(angle);
 
         //qreal lengthFromOrigin = QLineF(QPointF(), rect.bottomRight()).length();

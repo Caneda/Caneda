@@ -31,9 +31,9 @@ SET( CANEDA_SRCS
 ADD_EXECUTABLE( caneda ${CANEDA_SRCS} )
 
 TARGET_LINK_LIBRARIES( caneda
-  Qt5::Widgets
-  Qt5::Svg
-  Qt5::PrintSupport
+  Qt6::Widgets
+  Qt6::Svg
+  Qt6::PrintSupport
   ${QWT_LIBRARIES}
   dialogs
   paintings
